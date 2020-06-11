@@ -1,0 +1,105 @@
+create database teacherManagement;
+use teacherManagement;
+create table teacher(
+    teacherID int(5) not null auto_increment,
+    name nvarchar(50) not null,
+    salary long default 0,
+    gender char(5) check (gender in ('male','female')),
+    numHouse tinyint,
+    street nvarchar(30),
+    village nvarchar(30),
+    city nvarchar(30),
+    boss int(5) not null,
+    subjectID varchar(30) not null ,
+    constraint teacher_pk primary key (teacherID)
+);
+
+create table topicTeacher(
+    teacherID int(5) not null,
+    phone bigint not null,
+    constraint topicTeacher_pk primary key (teacherID,phone),
+    constraint fk_topicTeacher foreign key (teacherID) references teacher(teacherID)
+);
+
+alter table teacher add constraint fk_boss foreign key (boss) references teacher(teacherID);
+
+create table subject(
+    departmentID int(10) not null ,
+    boss_subject int(5) not null ,
+    date_happy varchar(10),
+    phone bigint,
+    subjectID varchar(30) not null ,
+    subject_name varchar(30) not null ,
+    room varchar(10),
+    constraint subject_id_pk primary key (subjectID),
+    constraint fk_boss_subject foreign key (boss_subject) references teacher(teacherID)
+
+);
+
+alter table teacher add constraint fk_subjectID foreign key (subjectID) references subject(subjectID);
+
+create table department(
+    boss_department int(5) not null ,
+    date_happy varchar(10),
+    department_name nvarchar(30) not null ,
+    date_born varchar(10),
+    room nvarchar(30),
+    phone bigint,
+    departmentID int(10) not null ,
+    constraint departmentID_pk primary key (departmentID),
+    constraint fk_boss_department foreign key (boss_department) references teacher(teacherID)
+);
+
+alter table subject add constraint fk_departmentID foreign key (departmentID) references department(departmentID);
+
+create table topic(
+    topic_teacher int(5) not null ,
+    topicID int(5) not null ,
+    topic_name nvarchar(30) not null ,
+    money bigint,
+    manager nvarchar(30),
+    start_date varchar(10),
+    end_date varchar(10),
+    themeID int(5) not null ,
+    constraint topicID_pk primary key (topicID),
+    constraint fk_topic_teacher foreign key (topic_teacher) references teacher(teacherID)
+);
+
+create table theme(
+    themeID int(5) not null ,
+    theme_name nvarchar(30) not null ,
+    constraint themeID_pk primary key (themeID)
+);
+
+alter table topic add constraint fk_themeID foreign key (themeID) references theme(themeID);
+
+create table job(
+    topicID int(5) not null ,
+    numerical_order int(2) auto_increment ,
+    job_name nvarchar(30) not null ,
+    start_date varchar(10),
+    end_date varchar(10),
+    constraint numerical_order_pk primary key (numerical_order),
+    constraint fk_topicID foreign key (topicID) references topic(topicID)
+);
+alter table job change numerical_order numerical_order int(2)  not null auto_increment;
+
+-- alter table job change numerical_order numerical_order int(2) unsigned not null auto_increment;
+
+alter table job drop primary key;
+alter table job add primary key (numerical_order, topicID);
+alter table job add constraint fk_topicID foreign key (topicID) references topic(topicID);
+
+create table division(
+    teacherID int(5) not null ,
+    topicID int(5) not null ,
+    numerical_order int(2) not null ,
+    money_support bigint,
+    result varchar(7) check ( result in ('pass', 'failure')),
+    constraint devision_pk primary key (teacherID,topicID,numerical_order),
+    constraint fk_teacherID foreign key (teacherID) references teacher(teacherID)
+);
+
+alter table division add constraint fk_job foreign key (topicID,numerical_order) references job(topicID,numerical_order);
+
+insert into teacher values (10001,'tuyen',1000000,'male',1,'ton that tung','khuong thuong','ha noi',10001,'van');
